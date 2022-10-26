@@ -1,6 +1,8 @@
 import type {Request, Response, NextFunction} from 'express';
 import UserCollection from '../user/collection';
 
+const ADMIN_USERNAMES = ['fabrizzioorderique', 'pforderique'];
+
 /**
  * Checks if the current session user (if any) still exists in the database, for instance,
  * a user may try to post a freet in some browser while the account has been deleted in another or
@@ -12,9 +14,7 @@ const isCurrentSessionUserExists = async (req: Request, res: Response, next: Nex
 
     if (!user) {
       req.session.userId = undefined;
-      res.status(500).json({
-        error: 'User session was not recognized.'
-      });
+      res.status(500).json({error: 'User session was not recognized.'});
       return;
     }
   }
@@ -123,7 +123,7 @@ const isUserLoggedOut = (req: Request, res: Response, next: NextFunction) => {
 };
 
 /**
- * Checks if a user with userId as author id in req.query exists
+ * Checks if a user with userId as author in req.query exists
  */
 const isAuthorExists = async (req: Request, res: Response, next: NextFunction) => {
   if (!req.query.author) {
@@ -144,13 +144,51 @@ const isAuthorExists = async (req: Request, res: Response, next: NextFunction) =
   next();
 };
 
+/**
+ * Checks if a user with username in req.query exists
+ */
+const isUsernameExists = async (req: Request, res: Response, next: NextFunction) => {
+  if (!req.query.username) {
+    res.status(400).json({
+      error: 'Provided username must be nonempty.'
+    });
+    return;
+  }
+
+  const user = await UserCollection.findOneByUsername(req.query.username as string);
+  if (!user) {
+    res.status(404).json({
+      error: `A user with username ${req.query.username as string} does not exist.`
+    });
+    return;
+  }
+
+  next();
+};
+
+/**
+ * Checks if logged in user is an admin user
+ */
+const isAdminUser = async (req: Request, res: Response, next: NextFunction) => {
+  if (!ADMIN_USERNAMES.includes(req.session.username)) {
+    res.status(403).json({
+      PermissionError: `The signed in user ${req.session.username as string} is not an admin.`
+    });
+    return;
+  }
+
+  next();
+};
+
 export {
   isCurrentSessionUserExists,
   isUserLoggedIn,
   isUserLoggedOut,
   isUsernameNotAlreadyInUse,
   isAccountExists,
+  isUsernameExists,
   isAuthorExists,
   isValidUsername,
-  isValidPassword
+  isValidPassword,
+  isAdminUser
 };

@@ -1,11 +1,32 @@
 import type {Request, Response} from 'express';
 import express from 'express';
+import FollowCollection from '../follow/collection';
 import FreetCollection from '../freet/collection';
+import LikeCollection from '../like/collection';
 import UserCollection from './collection';
+import CircleCollection from '../circle/collection';
+import BotscoreCollection from '../botscore/collection';
 import * as userValidator from '../user/middleware';
 import * as util from './util';
 
 const router = express.Router();
+
+/**
+ * Get all the users
+ *
+ * @name GET /api/users
+ *
+ * @return {UserResponse[]} - A list of all the users sorted in descending
+ *                      order by date joined
+ */
+router.get(
+  '/',
+  async (req: Request, res: Response) => {
+    const users = await UserCollection.findAll();
+    const response = users.map(util.constructUserResponse);
+    res.status(200).json(response);
+  }
+);
 
 /**
  * Get the signed in user
@@ -55,6 +76,7 @@ router.post(
       req.body.username, req.body.password
     );
     req.session.userId = user._id.toString();
+    req.session.username = user.username;
     res.status(201).json({
       message: 'You have logged in successfully',
       user: util.constructUserResponse(user)
@@ -78,6 +100,7 @@ router.delete(
   ],
   (req: Request, res: Response) => {
     req.session.userId = undefined;
+    req.session.username = undefined;
     res.status(200).json({
       message: 'You have been logged out successfully.'
     });
@@ -107,7 +130,9 @@ router.post(
   ],
   async (req: Request, res: Response) => {
     const user = await UserCollection.addOne(req.body.username, req.body.password);
+    await BotscoreCollection.addOneDefault(user._id); // Assign default Botscore
     req.session.userId = user._id.toString();
+    req.session.username = user.username;
     res.status(201).json({
       message: `Your account was created successfully. You have been logged in as ${user.username}`,
       user: util.constructUserResponse(user)
@@ -160,9 +185,16 @@ router.delete(
   ],
   async (req: Request, res: Response) => {
     const userId = (req.session.userId as string) ?? ''; // Will not be an empty string since its validated in isUserLoggedIn
-    await UserCollection.deleteOne(userId);
-    await FreetCollection.deleteMany(userId);
+    await Promise.all([
+      UserCollection.deleteOne(userId),
+      FreetCollection.deleteMany(userId),
+      LikeCollection.deleteMany(userId),
+      FollowCollection.deleteMany(userId),
+      CircleCollection.deleteMany(userId),
+      BotscoreCollection.deleteMany(userId)
+    ]);
     req.session.userId = undefined;
+    req.session.username = undefined;
     res.status(200).json({
       message: 'Your account has been deleted successfully.'
     });
