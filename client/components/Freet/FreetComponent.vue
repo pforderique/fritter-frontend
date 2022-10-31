@@ -8,6 +8,7 @@
     <header>
       <h3 class="author">
         @{{ freet.author }}
+        | BS: {{ freet.botscore.score }}%
       </h3>
       <div
         v-if="$store.state.username === freet.author"

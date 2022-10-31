@@ -19,7 +19,16 @@ export default {
       credentials: 'same-origin' // Sends express-session credentials with request
     }).then(res => res.json()).then(res => {
       const user = res.user;
+      this.$store.commit('setUser', user ? user : {});
       this.$store.commit('setUsername', user ? user.username : null);
+    });
+
+    // Sync the botscore to the user signed in
+    fetch('/api/botscores', {
+      credentials: 'same-origin' // Sends express-session credentials with request
+    }).then(res => res.json()).then(res => {
+      const botscores = res;
+      this.$store.commit('updateBotscores', botscores ? botscores : []);
     });
 
     // Clear alerts on page refresh

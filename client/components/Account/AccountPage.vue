@@ -9,6 +9,7 @@
       </header>
       <ChangeUsernameForm />
       <ChangePasswordForm />
+      <ChangeThresholdForm />
     </section>
     <section>
       <header>
@@ -21,6 +22,7 @@
 </template>
 
 <script>
+import ChangeThresholdForm from '@/components/Account/ChangeThresholdForm.vue';
 import ChangeUsernameForm from '@/components/Account/ChangeUsernameForm.vue';
 import ChangePasswordForm from '@/components/Account/ChangePasswordForm.vue';
 import DeleteAccountForm from '@/components/Account/DeleteAccountForm.vue';
@@ -29,6 +31,7 @@ import LogoutForm from '@/components/Account/LogoutForm.vue';
 export default {
   name: 'AccountPage',
   components: {
+    ChangeThresholdForm,
     ChangeUsernameForm,
     ChangePasswordForm,
     DeleteAccountForm,

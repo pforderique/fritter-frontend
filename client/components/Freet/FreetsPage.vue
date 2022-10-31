@@ -69,6 +69,8 @@ export default {
   mounted() {
     this.$refs.getFreetsForm.submit();
   }
+  // TODO(pf): compute "feed" by filtering out non following and self tweets.
+  // use this instead of $store.state.freets 
 };
 </script>
 
