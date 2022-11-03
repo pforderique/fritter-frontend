@@ -45,12 +45,22 @@ const store = new Vuex.Store({
 
         const followersUrl =  `/api/follows?followee=${user.username}`;
         const followingUrl =  `/api/follows?follower=${user.username}`;
-        const followers = await fetch(followersUrl).then(async r => r.json());
+        const followers = await (fetch(followersUrl).then(async r => r.json()));
         const following = await fetch(followingUrl).then(async r => r.json());
+        console.log(following);
 
-        user.followers = followers;
-        user.following = following;
-        // TODO(pf): add more features to object like follows, etc.
+        const followerUsernames = [''].splice(1); // remove the first empty string
+        for (const follow of followers) {
+          followerUsernames.push(follow.follower);
+        }
+
+        const followingUsernames = [''].splice(1); // remove the first empty string
+        for (const follow of following) {
+          followingUsernames.push(follow.following);
+        }
+
+        user.followers = followerUsernames;
+        user.following = followingUsernames;
       }
 
       state.user = user;

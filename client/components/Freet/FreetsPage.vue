@@ -6,6 +6,8 @@
       <header>
         <h2>Welcome @{{ $store.state.username }}</h2>
       </header>
+      <p>User >>> {{ $store.state.user }}</p>
+      <p>Feed >>> {{ getFeed }}</p>
       <CreateFreetForm />
     </section>
     <section v-else>
@@ -41,10 +43,10 @@
         </div>
       </header>
       <section
-        v-if="$store.state.freets.length"
+        v-if="getFeed.length"
       >
         <FreetComponent
-          v-for="freet in $store.state.freets"
+          v-for="freet in getFeed"
           :key="freet.id"
           :freet="freet"
         />
@@ -66,6 +68,25 @@ import GetFreetsForm from '@/components/Freet/GetFreetsForm.vue';
 export default {
   name: 'FreetPage',
   components: {FreetComponent, GetFreetsForm, CreateFreetForm},
+  data() {
+    return {
+      refresh: 0
+    }
+  },
+  computed : {
+    getFeed() {
+      // this.refresh;
+      // returns all freets if user not logged in, else returns freets
+      // filtered by only those that user is following.
+      if (!this.$store.state.username) {
+        return this.$store.state.freets;
+      }
+      // returns freets made by users that the user follows
+      return this.$store.state.freets.filter(
+        freet => freet.author !== this.$store.state.username
+        && this.$store.state.user.following.includes(freet.author));
+      }
+  },
   mounted() {
     this.$refs.getFreetsForm.submit();
   }
