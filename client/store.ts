@@ -67,6 +67,11 @@ const store = new Vuex.Store({
 
       state.user = user;
     },
+    updateUser(state, user) {
+      // sets the user, but must only be used if the current user object just
+      // has a modification!!!
+      state.user = user;
+    },
     async setAllUsers(state, users) {
       for (const user of users) {
         const botscoreUrl = `/api/botscores?username=${user.username}`;
@@ -140,6 +145,10 @@ const store = new Vuex.Store({
 
       state.freets = res;
     }
+    
+  },
+  getters: {
+    
   },
   // Store data across page refreshes, only discard on browser close
   plugins: [createPersistedState()]
