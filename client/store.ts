@@ -14,6 +14,7 @@ const store = new Vuex.Store({
     botscores: [], // All botscores created in the app
     username: null, // Username of the logged in user
     user: {}, // the user object containing global info about user
+    allUsers: [], // object for every user.
     alerts: {} // global success/error messages encountered during submissions to non-visible forms
   },
   mutations: {
@@ -40,15 +41,16 @@ const store = new Vuex.Store({
        */
       if (Object.keys(user).length) {
         const botscoreUrl = `/api/botscores?username=${user.username}`;
-        const botscore = await fetch(botscoreUrl).then(async r => r.json());
+        const followersUrl = `/api/follows?followee=${user.username}`;
+        const followingUrl = `/api/follows?follower=${user.username}`;
+
+        const [botscore, followers, following] = await Promise.all([
+          fetch(botscoreUrl).then(async r => r.json()),
+          fetch(followersUrl).then(async r => r.json()),
+          fetch(followingUrl).then(async r => r.json())
+        ])
+        
         user.botscore = botscore;
-
-        const followersUrl =  `/api/follows?followee=${user.username}`;
-        const followingUrl =  `/api/follows?follower=${user.username}`;
-        const followers = await (fetch(followersUrl).then(async r => r.json()));
-        const following = await fetch(followingUrl).then(async r => r.json());
-        console.log(following);
-
         const followerUsernames = [''].splice(1); // remove the first empty string
         for (const follow of followers) {
           followerUsernames.push(follow.follower);
@@ -64,6 +66,35 @@ const store = new Vuex.Store({
       }
 
       state.user = user;
+    },
+    async setAllUsers(state, users) {
+      for (const user of users) {
+        const botscoreUrl = `/api/botscores?username=${user.username}`;
+        const followersUrl = `/api/follows?followee=${user.username}`;
+        const followingUrl = `/api/follows?follower=${user.username}`;
+
+        const [botscore, followers, following] = await Promise.all([
+          fetch(botscoreUrl).then(async r => r.json()),
+          fetch(followersUrl).then(async r => r.json()),
+          fetch(followingUrl).then(async r => r.json())
+        ])
+        
+        user.botscore = botscore;
+        const followerUsernames = [''].splice(1); // remove the first empty string
+        for (const follow of followers) {
+          followerUsernames.push(follow.follower);
+        }
+
+        const followingUsernames = [''].splice(1); // remove the first empty string
+        for (const follow of following) {
+          followingUsernames.push(follow.following);
+        }
+
+        user.followers = followerUsernames;
+        user.following = followingUsernames;
+      }
+
+      state.allUsers = users;
     },
     updateFilter(state, filter) {
       /**

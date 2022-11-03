@@ -23,6 +23,13 @@ export default {
       this.$store.commit('setUsername', user ? user.username : null);
     });
 
+    // GRAB ALL users... will be needed for profiles.
+    fetch('/api/users', {
+      credentials: 'same-origin' // Sends express-session credentials with request
+    }).then(res => res.json()).then(res => {
+      this.$store.commit('setAllUsers', res ? res : []);
+    });
+
     // Sync the botscore to the user signed in
     fetch('/api/botscores', {
       credentials: 'same-origin' // Sends express-session credentials with request

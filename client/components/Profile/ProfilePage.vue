@@ -3,30 +3,41 @@
 
 <template>
   <main>
-    <section>
+    <section v-if="getProfileUser">
+      <p>Signed in User >>> {{ $store.state.user }}</p>
+      <!-- <p>ALL Users >>> {{ $store.state.allUsers }}</p> -->
+      <p>Params >>> {{ $route.params }}</p>
       <header>
-        <h2>@{{ $store.state.username }}</h2>
+        <h2>@{{ $route.params.username }}</h2>
       </header>
-      <!-- <p>USER: {{ $store.state.user }}</p>  -->
-      <h4>Joined on {{ $store.state.user.dateJoined }}</h4>
-      <h4 v-if="$store.state.user.followers">
-        {{ $store.state.user.followers.length }} Followers 
-        | {{ $store.state.user.following.length }} Following
+      <h4>Joined on {{ getProfileUser.dateJoined }}</h4>
+
+      <!-- this needs to change -->
+      <h4>
+        {{ getProfileUser.followers.length }} Followers 
+        | {{ getProfileUser.following.length }} Following
       </h4>
-      <section v-if="$store.state.user.botscore">
-        <p>My Bot Score: {{ $store.state.user.botscore.score }}%</p>
-        <p>My Bot Threshold: {{ $store.state.user.botscore.threshold }}%</p>
+
+      <section>
+        <p>
+          Bot Score: {{ getProfileUser.botscore.score }}% 
+          | Bot Threshold: {{ getProfileUser.botscore.threshold }}%
+        </p>
       </section>
+
       <section
-        v-if="getUsersFreets.length"
+        v-if="getProfileFreets.length"
       >
-        <h2>My Freets</h2>
+        <h2>{{ isOwnProfile ? 'My' : $route.params.username + "'s" }} Freets</h2>
         <FreetComponent
-          v-for="freet in getUsersFreets"
+          v-for="freet in getProfileFreets"
           :key="freet.id"
           :freet="freet"
         />
       </section>
+    </section>
+    <section v-else>
+      <h2>User {{ $route.params.username }} not found</h2>
     </section>
   </main>
 </template>
@@ -40,15 +51,23 @@ export default {
     FreetComponent
   },
   data() {
-    return {
-      age: 17
-    }
+    return {}
   },
   computed : {
-    getUsersFreets() {
+    isOwnProfile() {
+      return this.$store.state.username === this.$route.params.username;
+    },
+    getProfileUser() {
+      // returns user object
+      if (this.isOwnProfile) return this.$store.state.user;
+      const filteredUsers = this.$store.state.allUsers.filter(user => user.username === this.$route.params.username);
+      if(filteredUsers.length !== 1) return null;
+      return filteredUsers[0];
+    },
+    getProfileFreets() {
       // returns list of all freets by this user
       return this.$store.state.freets.filter(
-        freet => freet.author === this.$store.state.username);
+        freet => freet.author === this.$route.params.username);
     }
   }
 };

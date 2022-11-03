@@ -22,7 +22,7 @@
       </router-link>
       <router-link
         v-if="$store.state.username"
-        to="/profile"
+        :to="{ path: '/profile/' + $store.state.username }"
       >
         Profile
       </router-link>

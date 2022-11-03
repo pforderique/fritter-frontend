@@ -6,8 +6,6 @@
       <header>
         <h2>Welcome @{{ $store.state.username }}</h2>
       </header>
-      <p>User >>> {{ $store.state.user }}</p>
-      <p>Feed >>> {{ getFeed }}</p>
       <CreateFreetForm />
     </section>
     <section v-else>
@@ -75,7 +73,7 @@ export default {
   },
   computed : {
     getFeed() {
-      // this.refresh;
+      this.refresh;
       // returns all freets if user not logged in, else returns freets
       // filtered by only those that user is following.
       if (!this.$store.state.username) {
@@ -84,14 +82,13 @@ export default {
       // returns freets made by users that the user follows
       return this.$store.state.freets.filter(
         freet => freet.author !== this.$store.state.username
-        && this.$store.state.user.following.includes(freet.author));
+        && this.$store.state.user.following.includes(freet.author)
+        && freet.botscore.score <= this.$store.state.user.botscore.threshold);
       }
   },
   mounted() {
     this.$refs.getFreetsForm.submit();
   }
-  // TODO(pf): compute "feed" by filtering out non following and self tweets.
-  // use this instead of $store.state.freets 
 };
 </script>
 
