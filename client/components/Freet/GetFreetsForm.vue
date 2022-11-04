@@ -15,7 +15,7 @@ export default {
       try {
         const r = await fetch(url);
         const res = await r.json();
-        console.log('all freets response: ', res);
+        // console.log('all freets response: ', res);
         if (!r.ok) {
           throw new Error(res.error);
         }

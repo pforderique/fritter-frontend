@@ -82,7 +82,7 @@ export default {
       // returns freets made by users that the user follows
       //  and that are below or at the user'd bot threshold
       //  and are in the "circle" of the freet
-      console.log("feed before filter:", this.$store.state.freets);
+      // console.log("feed before filter:", this.$store.state.freets);
       return this.$store.state.freets.filter(
         freet => freet.author !== this.$store.state.username
         && freet.botscore.score <= this.$store.state.user.botscore.threshold

@@ -11,7 +11,6 @@ const store = new Vuex.Store({
   state: {
     filter: null, // Username to filter shown freets by (null = show all)
     freets: [], // All freets created in the app, including their botscore object!
-    botscores: [], // All botscores created in the app
     username: null, // Username of the logged in user
     user: {}, // the user object containing global info about user
     allUsers: [], // object for every user.
@@ -43,14 +42,18 @@ const store = new Vuex.Store({
         const botscoreUrl = `/api/botscores?username=${user.username}`;
         const followersUrl = `/api/follows?followee=${user.username}`;
         const followingUrl = `/api/follows?follower=${user.username}`;
+        const circleUrl = `/api/circles?username=${user.username}`;
 
-        const [botscore, followers, following] = await Promise.all([
+        const [botscore, followers, following, circles] = await Promise.all([
           fetch(botscoreUrl).then(async r => r.json()),
           fetch(followersUrl).then(async r => r.json()),
-          fetch(followingUrl).then(async r => r.json())
+          fetch(followingUrl).then(async r => r.json()),
+          fetch(circleUrl).then(async r => r.json())
         ])
         
         user.botscore = botscore;
+        user.circles = circles.map(circle => circle.name);
+
         const followerUsernames = [''].splice(1); // remove the first empty string
         for (const follow of followers) {
           followerUsernames.push(follow.follower);
@@ -144,16 +147,8 @@ const store = new Vuex.Store({
           circleCache.set(freet._id, newCircleObj);
         }
       }
-      console.log('freets assembled in store: ', freets);
 
       state.freets = freets;
-    },
-    updateBotscores(state, botscores) {
-      /**
-       * Update the stored freets to the provided freets.
-       * @param botscores - Freets to store
-       */
-      state.botscores = botscores;
     },
     async refreshFreets(state) {
       /**
@@ -161,6 +156,7 @@ const store = new Vuex.Store({
        */
       const url = state.filter ? `/api/users/${state.filter}/freets` : '/api/freets';
       const freets = await fetch(url).then(async r => r.json());
+
       let botscoreCache = new Map();
       let circleCache = new Map();
       for (const freet of freets) {
@@ -191,14 +187,18 @@ const store = new Vuex.Store({
           circleCache.set(freet._id, newCircleObj);
         }
       }
-      console.log('freets assembled in store: ', freets);
 
       state.freets = freets;
     }
     
   },
   getters: {
-    
+    // ownFreets: (state) => {
+    //   return state.freets.filter(freet => freet.author === state.username);
+    // }
+    // findByKeyword: (state) => (keyword) => {
+    //   return state.items.filter(item => item.toLowerCase().includes(keyword)).length;
+    // }
   },
   // Store data across page refreshes, only discard on browser close
   plugins: [createPersistedState()]

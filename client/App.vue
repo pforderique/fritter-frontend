@@ -30,14 +30,6 @@ export default {
       this.$store.commit('setAllUsers', res ? res : []);
     });
 
-    // Sync the botscore to the user signed in
-    fetch('/api/botscores', {
-      credentials: 'same-origin' // Sends express-session credentials with request
-    }).then(res => res.json()).then(res => {
-      const botscores = res;
-      this.$store.commit('updateBotscores', botscores ? botscores : []);
-    });
-
     // Clear alerts on page refresh
     this.$store.state.alerts = {};
   }

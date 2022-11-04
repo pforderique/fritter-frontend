@@ -4,7 +4,7 @@
 <template>
   <main>
     <section v-if="getProfileUser">
-      <!-- <p>Signed in User >>> {{ $store.state.user }}</p> -->
+      <p>Signed in User >>> {{ $store.state.user }}</p>
       <!-- <p>ALL Users >>> {{ $store.state.allUsers }}</p> -->
       <!-- <p>Params >>> {{ $route.params }}</p> -->
       <header>
@@ -24,6 +24,13 @@
           | Bot Threshold: {{ getProfileUser.botscore.threshold }}%
         </p>
       </section>
+
+      <p v-if="isOwnProfile">
+        My Circles: {{ getNumCircles ? getProfileUser.circles.join(', ') : 'No Circles' }}
+      </p>
+      <p v-else>
+        Circles: {{ getNumCircles ? getNumCircles : 'No Circles' }}
+      </p>
 
       <button
         v-if="!isOwnProfile"
@@ -70,15 +77,17 @@ export default {
     getProfileUser() {
       // returns user object
       if (this.isOwnProfile) return this.$store.state.user;
-      const filteredUsers = this.$store.state.allUsers.filter(user => user.username === this.$route.params.username);
-      if(filteredUsers.length !== 1) return null;
-      return filteredUsers[0];
+      const filteredUser = this.$store.state.allUsers.find(user => user.username === this.$route.params.username);
+      return filteredUser;
     },
     getProfileFreets() {
       // returns list of all freets by this user
       return this.$store.state.freets.filter(
         freet => freet.author === this.$route.params.username);
-    }
+    },
+    getNumCircles() {
+      return (this.getProfileUser.circles ?? []).length;
+    },
   },
   methods: {
     async onFollowClick() {
