@@ -19,7 +19,7 @@ class BotscoreCollection {
    */
   static async addOneDefault(userId: Types.ObjectId | string): Promise<HydratedDocument<Botscore>> {
     const botscore = new BotscoreModel({
-      userId, DEFAULT_INITIAL_SCORE, DEFAULT_INITIAL_THRESHOLD
+      userId, score: DEFAULT_INITIAL_SCORE, threshold: DEFAULT_INITIAL_THRESHOLD
     });
     await botscore.save(); // Saves botscore to MongoDB
     return botscore.populate('userId');
