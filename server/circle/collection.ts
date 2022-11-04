@@ -87,12 +87,10 @@ class CircleCollection {
     }
 
     if (membersId) {
-      console.log(membersId);
       const membersObjectIds = membersId.filter(
         id => typeof id === 'string' && Types.ObjectId.isValid(id)).map(
         id => typeof id === 'string' ? new Types.ObjectId(id) : id
       );
-      console.log('membersObjectIds', membersObjectIds);
       circle.membersId = membersObjectIds;
     }
 

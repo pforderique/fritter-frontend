@@ -1,8 +1,10 @@
 import type {NextFunction, Request, Response} from 'express';
 import express from 'express';
 import FreetCollection from './collection';
+import CircleCollection from '../circle/collection';
 import * as userValidator from '../user/middleware';
 import * as freetValidator from '../freet/middleware';
+import * as circleValidator from '../circle/middleware';
 import * as util from './util';
 
 const router = express.Router();
@@ -35,6 +37,7 @@ router.get(
     }
 
     const allFreets = await FreetCollection.findAll();
+    console.log(allFreets);
     const response = allFreets.map(util.constructFreetResponse);
     res.status(200).json(response);
   },
@@ -54,6 +57,7 @@ router.get(
  * @name POST /api/freets
  *
  * @param {string} content - The content of the freet
+ * @param {string} circle - The circle name of the freet (All Followers) default
  * @return {FreetResponse} - The created freet
  * @throws {403} - If the user is not logged in
  * @throws {400} - If the freet content is empty or a stream of empty spaces
@@ -63,11 +67,19 @@ router.post(
   '/',
   [
     userValidator.isUserLoggedIn,
-    freetValidator.isValidFreetContent
+    freetValidator.isValidFreetContent,
+    circleValidator.isCircleNameBelongToUser
   ],
   async (req: Request, res: Response) => {
     const userId = (req.session.userId as string) ?? ''; // Will not be an empty string since its validated in isUserLoggedIn
-    const freet = await FreetCollection.addOne(userId, req.body.content);
+    let circleId;
+    if (req.body.circle !== 'All Followers') {
+      const circles = await CircleCollection.findAllByCreator(req.session.username);
+      circleId = circles.find(circle => circle.name === req.body.circle)._id;
+    }
+
+    const freet = await FreetCollection.addOne(
+      userId, req.body.content, circleId);
 
     res.status(201).json({
       message: 'Your freet was created successfully.',

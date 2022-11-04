@@ -25,9 +25,9 @@
       <header>
         <div class="left">
           <h2>
-            Viewing all freets
+            {{ $store.state.username ? 'My Feed' : 'Viewing all freets' }}
             <span v-if="$store.state.filter">
-              by @{{ $store.state.filter }}
+              filtered by @{{ $store.state.filter }}
             </span>
           </h2>
         </div>
@@ -80,11 +80,17 @@ export default {
         return this.$store.state.freets;
       }
       // returns freets made by users that the user follows
+      //  and that are below or at the user'd bot threshold
+      //  and are in the "circle" of the freet
+      console.log("feed before filter:", this.$store.state.freets);
       return this.$store.state.freets.filter(
         freet => freet.author !== this.$store.state.username
+        && freet.botscore.score <= this.$store.state.user.botscore.threshold
         && this.$store.state.user.following.includes(freet.author)
-        && freet.botscore.score <= this.$store.state.user.botscore.threshold);
-      }
+        && (freet.circle.name === 'All Followers'
+          || freet.circle.members.includes(this.$store.state.username))
+      );
+    }
   },
   mounted() {
     this.$refs.getFreetsForm.submit();

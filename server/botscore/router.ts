@@ -43,9 +43,7 @@ router.get(
     userValidator.isUsernameExists
   ],
   async (req: Request, res: Response) => {
-    console.log('username given:', req.query.username);
     const userBotscore = await BotscoreCollection.findOneByUsername(req.query.username as string);
-    console.log('Botscore obj:', userBotscore);
     const response = util.constructBotscoreResponse(userBotscore);
     res.status(200).json(response);
   }

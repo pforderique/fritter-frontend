@@ -18,6 +18,12 @@
           :value="field.value"
           @input="field.value = $event.target.value"
         />
+        <textarea
+          v-else-if="field.id === 'circle'"
+          :name="field.id"
+          :value="field.value"
+          @input="field.value = $event.target.value"
+        />
         <input
           v-else
           :type="field.id === 'password' ? 'password' : 'text'"

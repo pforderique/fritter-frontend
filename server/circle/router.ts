@@ -101,7 +101,7 @@ router.delete(
   [
     userValidator.isUserLoggedIn,
     circleValidator.isCircleExists,
-    circleValidator.isCirlceBelongToUser
+    circleValidator.isCircleBelongToUser
   ],
   async (req: Request, res: Response) => {
     await CircleCollection.deleteOne(req.params.circleId);
@@ -128,7 +128,7 @@ router.patch(
   [
     userValidator.isUserLoggedIn,
     circleValidator.isCircleExists,
-    circleValidator.isCirlceBelongToUser
+    circleValidator.isCircleBelongToUser
   ],
   async (req: Request, res: Response, next: NextFunction) => {
     const circle = await CircleCollection.findOne(req.params.circleId);
@@ -158,7 +158,6 @@ router.patch(
   async (req: Request, res: Response) => {
     const ids: string[] = (req.body.membersId as string).trim().split(',').filter(
       id => Types.ObjectId.isValid(id) && id !== req.session.userId);
-    console.log('ids in request:', ids);
     const circle = await CircleCollection.updateOne(
       req.params.circleId, undefined, ids);
 

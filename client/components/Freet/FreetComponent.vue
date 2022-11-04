@@ -51,8 +51,11 @@
     </p>
     <p class="info">
       Posted at {{ freet.dateModified }}
-      <i v-if="freet.edited">(edited)</i>
+      <i v-if="freet.dateModified !== freet.dateCreated">(edited)</i>
     </p>
+    <i class="subinfo">
+      Group: {{ freet.circle.name }}
+    </i>
     <section class="alerts">
       <article
         v-for="(status, alert, index) in alerts"

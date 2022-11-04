@@ -83,7 +83,6 @@ export default {
   methods: {
     async onFollowClick() {
       // button should update by itself? else move isFollowing to data?
-      console.log('Foollow');
       const updatedUser = this.$store.state.user;
 
       if (this.isFollowing) {

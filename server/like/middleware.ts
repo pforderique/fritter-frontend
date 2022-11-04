@@ -24,8 +24,6 @@ const isLikeExists = async (req: Request, res: Response, next: NextFunction) => 
  */
 const isLikeBelongToUser = async (req: Request, res: Response, next: NextFunction) => {
   const like = await LikeCollection.findOne(req.params.likeId);
-  console.log(`person who liked: ${like.userId._id.toString()}`);
-  console.log(`person siged in: ${req.session.userId as string}`);
   if (like.userId._id.toString() !== req.session.userId) {
     res.status(404).json({
       likeDoesNotBelongToUserError: `Like with like ID ${req.params.likeId} did not belong to signed in user, ${req.session.username as string}.`

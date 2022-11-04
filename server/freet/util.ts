@@ -9,6 +9,7 @@ type FreetResponse = {
   dateCreated: string;
   content: string;
   dateModified: string;
+  circle?: string; // Name of the circle.
 };
 
 /**
@@ -33,13 +34,17 @@ const constructFreetResponse = (freet: HydratedDocument<Freet>): FreetResponse =
     })
   };
   const {username} = freetCopy.authorId;
+  const circle = freetCopy.circleId ? freetCopy.circleId.name : 'All Followers';
+
   delete freetCopy.authorId;
+  freetCopy.circleId = undefined;
   return {
     ...freetCopy,
     _id: freetCopy._id.toString(),
     author: username,
     dateCreated: formatDate(freet.dateCreated),
-    dateModified: formatDate(freet.dateModified)
+    dateModified: formatDate(freet.dateModified),
+    circle
   };
 };
 

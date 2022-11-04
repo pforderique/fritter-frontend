@@ -22,11 +22,31 @@ const isCircleExists = async (req: Request, res: Response, next: NextFunction) =
 /**
  * Checks if a circleId "belongs" to signed in user
  */
-const isCirlceBelongToUser = async (req: Request, res: Response, next: NextFunction) => {
+const isCircleBelongToUser = async (req: Request, res: Response, next: NextFunction) => {
   const circle = await CircleCollection.findOne(req.params.circleId);
   if (circle.creatorId._id.toString() !== req.session.userId) {
     res.status(403).json({
       circleDoesNotBelongToUserError: `Circle with like ID ${req.params.circleId} did not belong to signed in user, ${req.session.username as string}.`
+    });
+    return;
+  }
+
+  next();
+};
+
+/**
+ * Checks if a circle in req.body "belongs" to signed in user
+ */
+const isCircleNameBelongToUser = async (req: Request, res: Response, next: NextFunction) => {
+  if (req.body.circle === 'All Followers') {
+    next();
+    return;
+  }
+
+  const circles = await CircleCollection.findAllByCreator(req.session.username);
+  if (!circles.find(circle => circle.name === req.body.circle)) {
+    res.status(403).json({
+      error: `${req.session.username as string} does not have a circle named ${req.body.circle as string}.`
     });
     return;
   }
@@ -89,7 +109,8 @@ const isMembersExist = async (req: Request, res: Response, next: NextFunction) =
 
 export {
   isCircleExists,
-  isCirlceBelongToUser,
+  isCircleBelongToUser,
+  isCircleNameBelongToUser,
   isNameNonEmpty,
   isMembersExist,
   isMembersNonEmpty

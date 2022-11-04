@@ -17,17 +17,28 @@ class FreetCollection {
    *
    * @param {string} authorId - The id of the author of the freet
    * @param {string} content - The id of the content of the freet
+   * @param {string} circleId - The circle id of the circle the freet belongs to
    * @return {Promise<HydratedDocument<Freet>>} - The newly created freet
    */
-  static async addOne(authorId: Types.ObjectId | string, content: string): Promise<HydratedDocument<Freet>> {
+  static async addOne(
+    authorId: Types.ObjectId | string,
+    content: string,
+    circleId?: Types.ObjectId | string
+  ): Promise<HydratedDocument<Freet>> {
     const date = new Date();
     const freet = new FreetModel({
       authorId,
       dateCreated: date,
       content,
-      dateModified: date
+      dateModified: date,
+      circleId // Can be undef
     });
     await freet.save(); // Saves freet to MongoDB
+
+    if (circleId) {
+      return freet.populate('authorId circleId');
+    }
+
     return freet.populate('authorId');
   }
 
@@ -38,7 +49,7 @@ class FreetCollection {
    * @return {Promise<HydratedDocument<Freet>> | Promise<null> } - The freet with the given freetId, if any
    */
   static async findOne(freetId: Types.ObjectId | string): Promise<HydratedDocument<Freet>> {
-    return FreetModel.findOne({_id: freetId}).populate('authorId');
+    return FreetModel.findOne({_id: freetId}).populate('authorId circleId');
   }
 
   /**
@@ -48,7 +59,7 @@ class FreetCollection {
    */
   static async findAll(): Promise<Array<HydratedDocument<Freet>>> {
     // Retrieves freets and sorts them from most to least recent
-    return FreetModel.find({}).sort({dateModified: -1}).populate('authorId');
+    return FreetModel.find({}).sort({dateModified: -1}).populate('authorId circleId');
   }
 
   /**
@@ -59,7 +70,7 @@ class FreetCollection {
    */
   static async findAllByUsername(username: string): Promise<Array<HydratedDocument<Freet>>> {
     const author = await UserCollection.findOneByUsername(username);
-    return FreetModel.find({authorId: author._id}).sort({dateModified: -1}).populate('authorId');
+    return FreetModel.find({authorId: author._id}).sort({dateModified: -1}).populate('authorId circleId');
   }
 
   /**
@@ -74,7 +85,7 @@ class FreetCollection {
     freet.content = content;
     freet.dateModified = new Date();
     await freet.save();
-    return freet.populate('authorId');
+    return freet.populate('authorId circleId');
   }
 
   /**
