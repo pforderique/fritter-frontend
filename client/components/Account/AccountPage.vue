@@ -10,6 +10,7 @@
       <ChangeUsernameForm />
       <ChangePasswordForm />
       <ChangeThresholdForm />
+      <ToggleDirectFollowing />
       <CreateCircleForm /> 
     </section>
     <section>
@@ -27,6 +28,7 @@ import CreateCircleForm from '@/components/Account/CreateCircleForm.vue';
 import ChangeThresholdForm from '@/components/Account/ChangeThresholdForm.vue';
 import ChangeUsernameForm from '@/components/Account/ChangeUsernameForm.vue';
 import ChangePasswordForm from '@/components/Account/ChangePasswordForm.vue';
+import ToggleDirectFollowing from '@/components/Account/ToggleDirectFollowing.vue';
 import DeleteAccountForm from '@/components/Account/DeleteAccountForm.vue';
 import LogoutForm from '@/components/Account/LogoutForm.vue';
 
@@ -37,6 +39,7 @@ export default {
     ChangeThresholdForm,
     ChangeUsernameForm,
     ChangePasswordForm,
+    ToggleDirectFollowing,
     DeleteAccountForm,
     LogoutForm
   }

@@ -53,6 +53,19 @@ const isValidPassword = (req: Request, res: Response, next: NextFunction) => {
 };
 
 /**
+ * Checks if a password in req.body is valid, that is, at 6-50 characters long without any spaces
+ */
+const isValidShowDirectFollowingOnly = (req: Request, res: Response, next: NextFunction) => {
+  if (req.body.showDirectFollowingOnly as string
+    && !['true', 'false'].includes(req.body.showDirectFollowingOnly as string)) {
+    res.status(400).json({error: 'ShowDirectFollowingOnly must be a boolean.'});
+    return;
+  }
+
+  next();
+};
+
+/**
  * Checks if a user with username and password in req.body exists
  */
 const isAccountExists = async (req: Request, res: Response, next: NextFunction) => {
@@ -190,5 +203,6 @@ export {
   isAuthorExists,
   isValidUsername,
   isValidPassword,
+  isValidShowDirectFollowingOnly,
   isAdminUser
 };

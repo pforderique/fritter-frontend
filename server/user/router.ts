@@ -147,6 +147,7 @@ router.post(
  *
  * @param {string} username - The user's new username
  * @param {string} password - The user's new password
+ * @param {boolean} showDirectFollowingOnly - option
  * @return {UserResponse} - The updated user
  * @throws {403} - If user is not logged in
  * @throws {409} - If username already taken
@@ -158,7 +159,8 @@ router.patch(
     userValidator.isUserLoggedIn,
     userValidator.isValidUsername,
     userValidator.isUsernameNotAlreadyInUse,
-    userValidator.isValidPassword
+    userValidator.isValidPassword,
+    userValidator.isValidShowDirectFollowingOnly
   ],
   async (req: Request, res: Response) => {
     const userId = (req.session.userId as string) ?? ''; // Will not be an empty string since its validated in isUserLoggedIn

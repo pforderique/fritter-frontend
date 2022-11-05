@@ -6,10 +6,18 @@
     class="freet"
   >
     <header>
-      <h3 class="author">
-        @{{ freet.author }}
-        | BS: {{ freet.botscore.score }}%
-      </h3>
+      <span>
+        <h3>
+          <span
+            class="author"
+            @click="$router.push(`/profile/${freet.author}`)"
+          >
+            @{{ freet.author }}
+          </span>
+          | BS: {{ freet.botscore.score }}%
+        </h3>
+      </span>
+
       <div
         v-if="$store.state.username === freet.author"
         class="actions"
@@ -175,5 +183,9 @@ export default {
     border: 1px solid #111;
     padding: 20px;
     position: relative;
+}
+.author:hover {
+  color: rgb(85, 0, 255);
+  cursor: pointer;
 }
 </style>

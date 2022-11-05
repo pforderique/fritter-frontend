@@ -117,35 +117,38 @@ const store = new Vuex.Store({
        * @param freets - Freets to store
        */
       
-      let botscoreCache = new Map();
-      let circleCache = new Map();
+      const botscoreCache = new Map(); // author -> botscoreObj
       for (const freet of freets) {
-        if (botscoreCache.has(freet.author) && circleCache.has(freet._id)) {
-          freet.botscore = botscoreCache.get(freet.author);
-          freet.circle = circleCache.get(freet.author);
-        } else {
-          const botUrl = `/api/botscores?username=${freet.author}`;
-          const circleUrl = `/api/circles?username=${freet.author}`;
+        const botUrl = `/api/botscores?username=${freet.author}`;
+        const circleUrl = `/api/circles?username=${freet.author}`;
+        // const likeUrl = 
 
-          const [botscore, authorCircles] = await Promise.all([
+        let botscore = botscoreCache.has(freet.author) ? 
+          botscoreCache.get(freet.author) : undefined;
+        let authorCircles;
+        if (botscore) {
+          [authorCircles] = await Promise.all([
+            fetch(circleUrl).then(async r => r.json())
+          ]);
+        } else {
+          [botscore, authorCircles] = await Promise.all([
             fetch(botUrl).then(async r => r.json()),
             fetch(circleUrl).then(async r => r.json())
-          ])
-
-          // will be either the list of members allowed to see this freet OR undef
-          const circleObj = authorCircles.find(
-            circle => circle.name === freet.circle);
-          const newCircleObj = {
-            name: freet.circle,
-            members: circleObj ? circleObj.members : undefined
-          };
-
-          freet.botscore = botscore;
-          freet.circle = newCircleObj;
-
-          botscoreCache.set(freet.author, botscore);
-          circleCache.set(freet._id, newCircleObj);
+          ]);
         }
+
+        // will be either the list of members allowed to see this freet OR undef
+        const circleObj = authorCircles.find(
+          circle => circle.name === freet.circle);
+        const newCircleObj = {
+          name: freet.circle,
+          members: circleObj ? circleObj.members : undefined
+        };
+
+        freet.botscore = botscore;
+        freet.circle = newCircleObj;
+
+        botscoreCache.set(freet.author, botscore);
       }
 
       state.freets = freets;
