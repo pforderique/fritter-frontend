@@ -6,6 +6,7 @@ import * as userValidator from '../user/middleware';
 import * as circleValidator from '../circle/middleware';
 import * as util from './util';
 import {Types} from 'mongoose';
+import UserCollection from '../user/collection';
 
 const router = express.Router();
 
@@ -78,6 +79,43 @@ router.post(
       id => id && id !== userId);
 
     const circle = await CircleCollection.addOne(userId, name, ids);
+
+    res.status(201).json({
+      message: `Your circle ${name} was created successfully.`,
+      circle: util.constructCircleResponse(circle)
+    });
+  }
+);
+
+/**
+ * Create a new circle.
+ *
+ * @name POST /api/circles/usernames
+ *
+ * @param {string} name - The name of the circle
+ * @param {string} memberUsernames - The list of member usernames, comma separated
+ * @return {CircleResponse} - The created circle
+ * @throws {400} - If the circle name or membersId is empty or undef
+ * @throws {403} - If the user is not logged in
+ * @throws {404} - If one or more users in members does not exist
+ */
+router.post(
+  '/usernames',
+  [
+    userValidator.isUserLoggedIn,
+    circleValidator.isNameNonEmpty,
+    circleValidator.isMemberUsernamesNonEmpty,
+    circleValidator.isMembersUsernamesExist
+  ],
+  async (req: Request, res: Response) => {
+    const [username, userId] = [req.session.username as string, req.session.userId as string];
+    const {name, memberUsernames} = req.body as {name: string; memberUsernames: string};
+    // Filter out emtpy strings and ids that match current user
+
+    const users = await Promise.all(memberUsernames.trim().split(',').filter(
+      u => u && u !== username).map(async u => UserCollection.findOneByUsername(u)));
+
+    const circle = await CircleCollection.addOne(userId, name, users.map(u => u._id));
 
     res.status(201).json({
       message: `Your circle ${name} was created successfully.`,

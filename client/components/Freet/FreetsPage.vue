@@ -74,22 +74,29 @@ export default {
   computed : {
     getFeed() {
       this.refresh;
-      // returns all freets if user not logged in, else returns freets
-      // filtered by only those that user is following.
+      // returns all freets if user not logged in, else returns actual feed
       if (!this.$store.state.username) {
         return this.$store.state.freets;
       }
-      // returns freets made by users that the user follows
-      //  and that are below or at the user'd bot threshold
-      //  and are in the "circle" of the freet
-      // console.log("feed before filter:", this.$store.state.freets);
-      return this.$store.state.freets.filter(
-        freet => freet.author !== this.$store.state.username
+      
+      const randUsername = (!this.$store.state.user.showDirectFollowingOnly
+                          && this.$store.state.user.following.length) ?
+                          this.$store.state.user.following[0] : undefined;
+
+      const feed = this.$store.state.freets.filter(freet => 
+        // author is not self
+        freet.author !== this.$store.state.username
+        // botscore requirement
         && freet.botscore.score <= this.$store.state.user.botscore.threshold
-        && this.$store.state.user.following.includes(freet.author)
+        // author is someone user follows or a follower follows (if enabled)
+        && (this.$store.state.user.following.includes(freet.author)
+          || (randUsername && freet.author === randUsername))
+        // user is in the tweet's circle
         && (freet.circle.name === 'All Followers'
           || freet.circle.members.includes(this.$store.state.username))
       );
+
+      return feed;
     }
   },
   mounted() {

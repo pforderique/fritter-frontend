@@ -10,6 +10,7 @@
       <ChangeUsernameForm />
       <ChangePasswordForm />
       <ChangeThresholdForm />
+      <CreateCircleForm /> 
     </section>
     <section>
       <header>
@@ -22,6 +23,7 @@
 </template>
 
 <script>
+import CreateCircleForm from '@/components/Account/CreateCircleForm.vue';
 import ChangeThresholdForm from '@/components/Account/ChangeThresholdForm.vue';
 import ChangeUsernameForm from '@/components/Account/ChangeUsernameForm.vue';
 import ChangePasswordForm from '@/components/Account/ChangePasswordForm.vue';
@@ -31,6 +33,7 @@ import LogoutForm from '@/components/Account/LogoutForm.vue';
 export default {
   name: 'AccountPage',
   components: {
+    CreateCircleForm,
     ChangeThresholdForm,
     ChangeUsernameForm,
     ChangePasswordForm,

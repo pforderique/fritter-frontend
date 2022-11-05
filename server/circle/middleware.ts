@@ -85,6 +85,18 @@ const isMembersNonEmpty = async (req: Request, res: Response, next: NextFunction
 };
 
 /**
+ * Checks if the member usernames field exist and is non empty
+ */
+const isMemberUsernamesNonEmpty = async (req: Request, res: Response, next: NextFunction) => {
+  const {memberUsernames} = req.body as {memberUsernames: string};
+  if (!memberUsernames || !memberUsernames.trim().split(',').filter(u => u)) {
+    return res.status(400).json({error: 'No member usernames specified.'});
+  }
+
+  next();
+};
+
+/**
  * Checks if each member in members exist
  */
 const isMembersExist = async (req: Request, res: Response, next: NextFunction) => {
@@ -107,11 +119,30 @@ const isMembersExist = async (req: Request, res: Response, next: NextFunction) =
   next();
 };
 
+/**
+ * Checks if each member in members exist
+ */
+const isMembersUsernamesExist = async (req: Request, res: Response, next: NextFunction) => {
+  const {memberUsernames} = req.body as {memberUsernames: string};
+  const usernames: string[] = memberUsernames.trim().split(',').filter(id => id);
+
+  const findings = await Promise.all(usernames.map(
+    async username => UserCollection.findOneByUsername(username)));
+
+  if (findings.some(res => !res)) {
+    return res.status(404).json({error: 'Some user in group does not exist.'});
+  }
+
+  next();
+};
+
 export {
   isCircleExists,
   isCircleBelongToUser,
   isCircleNameBelongToUser,
   isNameNonEmpty,
   isMembersExist,
-  isMembersNonEmpty
+  isMembersNonEmpty,
+  isMemberUsernamesNonEmpty,
+  isMembersUsernamesExist
 };

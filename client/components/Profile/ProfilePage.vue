@@ -10,18 +10,29 @@
       <header>
         <h2>@{{ $route.params.username }}</h2>
       </header>
-      <h4>Joined on {{ getProfileUser.dateJoined }}</h4>
+      <h4 v-if="getProfileUser.dateJoined">
+        Joined on {{ getProfileUser.dateJoined }}
+      </h4>
+      <h4 v-else>
+        Loading info...
+      </h4>
 
       <!-- this needs to change -->
-      <h4>
+      <h4 v-if="getProfileUser.followers">
         {{ getProfileUser.followers.length }} Followers 
         | {{ getProfileUser.following.length }} Following
       </h4>
+      <h4 v-else>
+        loading followers...
+      </h4>
 
       <section>
-        <p>
+        <p v-if="getProfileUser.botscore">
           Bot Score: {{ getProfileUser.botscore.score }}% 
           | Bot Threshold: {{ getProfileUser.botscore.threshold }}%
+        </p>
+        <p v-else>
+          loading botscore...
         </p>
       </section>
 
