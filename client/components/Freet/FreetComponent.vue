@@ -14,7 +14,7 @@
           >
             @{{ freet.author }}
           </span>
-          | BS: {{ freet.botscore.score }}%
+          <span v-if="freet.botscore">| BS: {{ freet.botscore.score }}%</span>
         </h3>
       </span>
 
@@ -112,7 +112,7 @@ export default {
       editing: false, // Whether or not this freet is in edit mode
       draft: this.freet.content, // Potentially-new content for this freet
       alerts: {}, // Displays success/error messages encountered during freet modification
-      likes: [...this.freet.likes]
+      likes: this.freet.likes ? [...this.freet.likes] : []
     };
   },
   computed: {
@@ -146,7 +146,6 @@ export default {
         this.likes = this.likes.concat([this.$store.state.username]);
       }
       // this.$store.commit('refreshFreets');
-      console.log('liked!');
     },
     startEditing() {
       /**
