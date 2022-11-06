@@ -11,7 +11,24 @@ const isLikeExists = async (req: Request, res: Response, next: NextFunction) => 
   const like = validFormat ? await LikeCollection.findOne(req.params.likeId) : '';
   if (!like) {
     res.status(404).json({
-      likeNotFoundError: `Like with like ID ${req.params.likeID} does not exist.`
+      error: `Like with like ID ${req.params.likeID} does not exist.`
+    });
+    return;
+  }
+
+  next();
+};
+
+/**
+ * Checks if user already liked this freetID in req.body exists
+ */
+const isLikeNotAlreadyExists = async (req: Request, res: Response, next: NextFunction) => {
+  const userLikes = await LikeCollection.findAllByUsername(req.session.username);
+  const like = userLikes.find(like => like.freetId === req.body.freetId);
+  console.log('like found:', like);
+  if (like) {
+    res.status(404).json({
+      error: `User ${req.session.username as string} already liked freet w/ id ${req.body.freetId as string}.`
     });
     return;
   }
@@ -26,7 +43,7 @@ const isLikeBelongToUser = async (req: Request, res: Response, next: NextFunctio
   const like = await LikeCollection.findOne(req.params.likeId);
   if (like.userId._id.toString() !== req.session.userId) {
     res.status(404).json({
-      likeDoesNotBelongToUserError: `Like with like ID ${req.params.likeId} did not belong to signed in user, ${req.session.username as string}.`
+      error: `Like with like ID ${req.params.likeId} did not belong to signed in user, ${req.session.username as string}.`
     });
     return;
   }
@@ -42,7 +59,7 @@ const isFreetExists = async (req: Request, res: Response, next: NextFunction) =>
   const like = validFormat ? await FreetCollection.findOne(req.body.freetId) : '';
   if (!like) {
     res.status(404).json({
-      freetNotFoundError: `Freet with freet ID ${req.body.freetId as string} does not exist.`
+      error: `Freet with freet ID ${req.body.freetId as string} does not exist.`
     });
     return;
   }
@@ -53,5 +70,6 @@ const isFreetExists = async (req: Request, res: Response, next: NextFunction) =>
 export {
   isLikeExists,
   isFreetExists,
-  isLikeBelongToUser
+  isLikeBelongToUser,
+  isLikeNotAlreadyExists
 };

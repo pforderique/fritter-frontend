@@ -74,13 +74,19 @@ export default {
   computed : {
     getFeed() {
       this.refresh;
-      // returns all freets if user not logged in, else returns actual feed
-      if (!this.$store.state.username) {
+      // returns all freets if user not logged in, or info not loaded,
+      // else returns actual feed
+      if (!this.$store.state.freets) {
+        return [];
+      }
+      if (!this.$store.state.username 
+        || !this.$store.state.user.botscore
+        || !this.$store.state.user.following) {
         return this.$store.state.freets;
       }
-      
+
       const randUsername = (!this.$store.state.user.showDirectFollowingOnly
-                          && this.$store.state.user.following.length) ?
+                          && this.$store.state.user.following) ?
                           this.$store.state.user.following[0] : undefined;
 
       const feed = this.$store.state.freets.filter(freet => 
@@ -92,7 +98,7 @@ export default {
         && (this.$store.state.user.following.includes(freet.author)
           || (randUsername && freet.author === randUsername))
         // user is in the tweet's circle
-        && (freet.circle.name === 'All Followers'
+        && (!freet.circle || freet.circle.name === 'All Followers'
           || freet.circle.members.includes(this.$store.state.username))
       );
 

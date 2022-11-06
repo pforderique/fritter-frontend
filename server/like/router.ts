@@ -62,7 +62,8 @@ router.post(
   '/',
   [
     userValidator.isUserLoggedIn,
-    likeValidator.isFreetExists
+    likeValidator.isFreetExists,
+    likeValidator.isLikeNotAlreadyExists
   ],
   async (req: Request, res: Response) => {
     const userId = (req.session.userId as string) ?? ''; // Will not be an empty string since its validated in isUserLoggedIn
@@ -93,7 +94,7 @@ router.delete(
     likeValidator.isLikeBelongToUser
   ],
   async (req: Request, res: Response) => {
-    await LikeCollection.deleteOne(req.params.like);
+    await LikeCollection.deleteOne(req.params.likeId);
     res.status(200).json({
       message: 'Your like was deleted successfully.'
     });

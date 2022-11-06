@@ -5,7 +5,7 @@
   <article
     class="freet"
   >
-    <header>
+    <header>      
       <span>
         <h3>
           <span
@@ -61,8 +61,29 @@
       Posted at {{ freet.dateModified }}
       <i v-if="freet.dateModified !== freet.dateCreated">(edited)</i>
     </p>
-    <i class="subinfo">
+
+    <span>{{ likes === undefined ? 'loading likes...' : likes.length }} {{ ' ' }}</span>
+    <span v-if="$store.state.username">
+      <button @click="onLikeClick">
+        <font-awesome-icon
+          v-if="userLikedPost"
+          icon="fa-solid fa-heart"
+        />
+        <font-awesome-icon
+          v-else
+          icon="fa-regular fa-heart"
+        />
+      </button> |
+    </span>
+    <span v-else>Likes | </span>
+    <i
+      v-if="freet.circle"
+      class="subinfo"
+    >
       Group: {{ freet.circle.name }}
+    </i>
+    <i v-else>
+      Loading group...
     </i>
     <section class="alerts">
       <article
@@ -90,10 +111,43 @@ export default {
     return {
       editing: false, // Whether or not this freet is in edit mode
       draft: this.freet.content, // Potentially-new content for this freet
-      alerts: {} // Displays success/error messages encountered during freet modification
+      alerts: {}, // Displays success/error messages encountered during freet modification
+      likes: [...this.freet.likes]
     };
   },
+  computed: {
+    userLikedPost() {
+      return this.likes.includes(this.$store.state.username);
+    }
+  },
   methods: {
+    async onLikeClick() {
+      if (this.userLikedPost) {
+        // unlike freet
+        const getUrl = `/api/likes?username=${this.$store.state.username}`;
+        const likeObj = (await fetch(getUrl).then(async r => r.json())).find(
+          like => like.freetId === this.freet._id);
+        console.log('like to remove: ', likeObj);
+
+        const deleteUrl = `/api/likes/${likeObj._id}`
+        await fetch(deleteUrl, { method: 'DELETE' });
+        this.likes = this.likes.filter(
+          like => like !== this.$store.state.username);
+      } else {
+        // like freet
+        const postUrl = '/api/likes';
+        const options = {
+          method: 'POST',
+          body: JSON.stringify({freetId: this.freet._id}),
+          headers: {'Content-Type': 'application/json'},
+          credentials: 'same-origin' // Sends express-session credentials with request
+        };
+        await fetch(postUrl, options);
+        this.likes = this.likes.concat([this.$store.state.username]);
+      }
+      // this.$store.commit('refreshFreets');
+      console.log('liked!');
+    },
     startEditing() {
       /**
        * Enables edit mode on this freet.
@@ -180,7 +234,8 @@ export default {
 
 <style scoped>
 .freet {
-    border: 1px solid #111;
+    border: 1px solid rgb(0, 210, 164);
+    border-radius: 8px;
     padding: 20px;
     position: relative;
 }

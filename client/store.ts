@@ -117,25 +117,31 @@ const store = new Vuex.Store({
        * @param freets - Freets to store
        */
       
-      const botscoreCache = new Map(); // author -> botscoreObj
+      const botscoreCache = new Map(); // author -> her botscoreObj
+      const circleCache = new Map(); // author -> her circles[]
+      const allLikes = await fetch(`/api/likes`).then(async r => r.json());
       for (const freet of freets) {
         const botUrl = `/api/botscores?username=${freet.author}`;
         const circleUrl = `/api/circles?username=${freet.author}`;
-        // const likeUrl = 
 
-        let botscore = botscoreCache.has(freet.author) ? 
-          botscoreCache.get(freet.author) : undefined;
-        let authorCircles;
-        if (botscore) {
-          [authorCircles] = await Promise.all([
-            fetch(circleUrl).then(async r => r.json())
-          ]);
-        } else {
-          [botscore, authorCircles] = await Promise.all([
-            fetch(botUrl).then(async r => r.json()),
-            fetch(circleUrl).then(async r => r.json())
-          ]);
-        }
+        if (botscoreCache.has(freet.author)
+         && circleCache.has(freet.author)) {
+          freet.botscore = botscoreCache.get(freet.author);
+          const circleObj = circleCache.get(freet.author).find(
+            circle => circle.name === freet.circle);
+          const newCircleObj = {
+            name: freet.circle,
+            members: circleObj ? circleObj.members : undefined
+          };
+          freet.circle = newCircleObj;
+          freet.likes = allLikes.filter(like => like.freetId === freet._id).map(like => like.user);
+          continue;
+         }
+
+        const [botscore, authorCircles] = await Promise.all([
+          fetch(botUrl).then(async r => r.json()),
+          fetch(circleUrl).then(async r => r.json())
+        ]);
 
         // will be either the list of members allowed to see this freet OR undef
         const circleObj = authorCircles.find(
@@ -147,8 +153,11 @@ const store = new Vuex.Store({
 
         freet.botscore = botscore;
         freet.circle = newCircleObj;
+        freet.likes = allLikes.filter(like => like.freetId === freet._id)
+                              .map(like => like.user);
 
         botscoreCache.set(freet.author, botscore);
+        circleCache.set(freet.author, authorCircles);
       }
 
       state.freets = freets;
@@ -159,36 +168,47 @@ const store = new Vuex.Store({
        */
       const url = state.filter ? `/api/users/${state.filter}/freets` : '/api/freets';
       const freets = await fetch(url).then(async r => r.json());
-
-      let botscoreCache = new Map();
-      let circleCache = new Map();
+      const botscoreCache = new Map(); // author -> her botscoreObj
+      const circleCache = new Map(); // author -> her circles[]
+      const allLikes = await fetch(`/api/likes`).then(async r => r.json());
       for (const freet of freets) {
-        if (botscoreCache.has(freet.author) && circleCache.has(freet._id)) {
+        const botUrl = `/api/botscores?username=${freet.author}`;
+        const circleUrl = `/api/circles?username=${freet.author}`;
+
+        if (botscoreCache.has(freet.author)
+         && circleCache.has(freet.author)) {
           freet.botscore = botscoreCache.get(freet.author);
-          freet.circle = circleCache.get(freet.author);
-        } else {
-          const botUrl = `/api/botscores?username=${freet.author}`;
-          const circleUrl = `/api/circles?username=${freet.author}`;
-
-          const [botscore, authorCircles] = await Promise.all([
-            fetch(botUrl).then(async r => r.json()),
-            fetch(circleUrl).then(async r => r.json())
-          ])
-
-          // will be either the list of members allowed to see this freet OR undef
-          const circleObj = authorCircles.find(
+          const circleObj = circleCache.get(freet.author).find(
             circle => circle.name === freet.circle);
           const newCircleObj = {
             name: freet.circle,
             members: circleObj ? circleObj.members : undefined
           };
-
-          freet.botscore = botscore;
           freet.circle = newCircleObj;
+          freet.likes = allLikes.filter(like => like.freetId === freet._id).map(like => like.user);
+          continue;
+         }
 
-          botscoreCache.set(freet.author, botscore);
-          circleCache.set(freet._id, newCircleObj);
-        }
+        const [botscore, authorCircles] = await Promise.all([
+          fetch(botUrl).then(async r => r.json()),
+          fetch(circleUrl).then(async r => r.json())
+        ]);
+
+        // will be either the list of members allowed to see this freet OR undef
+        const circleObj = authorCircles.find(
+          circle => circle.name === freet.circle);
+        const newCircleObj = {
+          name: freet.circle,
+          members: circleObj ? circleObj.members : undefined
+        };
+
+        freet.botscore = botscore;
+        freet.circle = newCircleObj;
+        freet.likes = allLikes.filter(like => like.freetId === freet._id)
+                              .map(like => like.user);
+
+        botscoreCache.set(freet.author, botscore);
+        circleCache.set(freet.author, authorCircles);
       }
 
       state.freets = freets;
