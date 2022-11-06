@@ -54,6 +54,7 @@
       >
         <h3>No freets found.</h3>
       </article>
+      <UsersScroll />
     </section>
   </main>
 </template>
@@ -62,10 +63,11 @@
 import FreetComponent from '@/components/Freet/FreetComponent.vue';
 import CreateFreetForm from '@/components/Freet/CreateFreetForm.vue';
 import GetFreetsForm from '@/components/Freet/GetFreetsForm.vue';
+import UsersScroll from '@/components/Freet/UsersScroll.vue';
 
 export default {
   name: 'FreetPage',
-  components: {FreetComponent, GetFreetsForm, CreateFreetForm},
+  components: {FreetComponent, GetFreetsForm, CreateFreetForm, UsersScroll},
   data() {
     return {
       refresh: 0

@@ -4,7 +4,7 @@
 <template>
   <main>
     <section v-if="getProfileUser">
-      <p>Signed in User >>> {{ $store.state.user }}</p>
+      <!-- <p>Signed in User >>> {{ $store.state.user }}</p> -->
       <!-- <p>ALL Users >>> {{ $store.state.allUsers }}</p> -->
       <!-- <p>Params >>> {{ $route.params }}</p> -->
       <header>
@@ -44,7 +44,7 @@
       </p>
 
       <button
-        v-if="!isOwnProfile"
+        v-if="$store.state.username && !isOwnProfile"
         @click="onFollowClick"
       >
         {{ isFollowing ? 'Following' : 'Follow' }}
@@ -83,7 +83,7 @@ export default {
       return this.$store.state.username === this.$route.params.username;
     },
     isFollowing() {
-      return this.$store.state.user.following.includes(this.$route.params.username);
+      return this.$store.state.user.following && this.$store.state.user.following.includes(this.$route.params.username);
     },
     getProfileUser() {
       // returns user object
