@@ -87,7 +87,7 @@ export default {
         return this.$store.state.freets;
       }
 
-      const randUsername = (!this.$store.state.user.showDirectFollowingOnly
+      const randFollowing = (!this.$store.state.user.showDirectFollowingOnly
                           && this.$store.state.user.following) ?
                           this.$store.state.user.following[0] : undefined;
 
@@ -98,7 +98,7 @@ export default {
         && freet.botscore.score <= this.$store.state.user.botscore.threshold
         // author is someone user follows or a follower follows (if enabled)
         && (this.$store.state.user.following.includes(freet.author)
-          || (randUsername && freet.author === randUsername))
+          || (randFollowing && freet.author === randFollowing))
         // user is in the tweet's circle
         && (!freet.circle || freet.circle.name === 'All Followers'
           || freet.circle.members.includes(this.$store.state.username))

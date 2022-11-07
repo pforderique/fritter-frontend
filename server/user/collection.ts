@@ -98,7 +98,7 @@ class UserCollection {
       user.username = userDetails.username;
     }
 
-    if (userDetails.showDirectFollowingOnly) {
+    if (userDetails.showDirectFollowingOnly !== undefined) {
       user.showDirectFollowingOnly = userDetails.showDirectFollowingOnly;
     }
 

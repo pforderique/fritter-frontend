@@ -11,8 +11,9 @@ export default {
       url: `/api/botscores/${this.$store.state.user.botscore._id}`,
       method: 'PATCH',
       hasBody: true,
+      // setUsername: true,
       fields: [
-        {id: 'threshold', label: 'Bot Threshold', value: `${this.$store.state.user.botscore.threshold}`}
+        {id: 'threshold', label: 'Bot Threshold', value: `${this.$store.state.user.botscore.threshold}`, dontClear: true}
       ],
       title: 'Set Bot Threshold',
       callback: () => {

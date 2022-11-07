@@ -70,8 +70,6 @@ export default {
       refreshFreets: false, // Whether or not stored freets should be updated after form submission
       alerts: {}, // Displays success/error messages encountered during form submission
       callback: null, // Function to run after successful form submission
-
-      selected: 'All Followers'
     };
   },
   methods: {
@@ -88,7 +86,9 @@ export default {
         options.body = JSON.stringify(Object.fromEntries(
           this.fields.map(field => {
             const {id, value} = field;
-            field.value = '';
+            if (!field.dontClear) {
+              field.value = '';
+            }
             return [id, value];
           })
         ));

@@ -56,8 +56,8 @@ const isValidPassword = (req: Request, res: Response, next: NextFunction) => {
  * Checks if a password in req.body is valid, that is, at 6-50 characters long without any spaces
  */
 const isValidShowDirectFollowingOnly = (req: Request, res: Response, next: NextFunction) => {
-  if (req.body.showDirectFollowingOnly as string
-    && !['true', 'false'].includes(req.body.showDirectFollowingOnly as string)) {
+  if (typeof req.body.showDirectFollowingOnly !== 'boolean') {
+    console.log('here!', req.body.showDirectFollowingOnly);
     res.status(400).json({error: 'ShowDirectFollowingOnly must be a boolean.'});
     return;
   }
