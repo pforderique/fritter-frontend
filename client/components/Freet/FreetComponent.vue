@@ -57,21 +57,21 @@
     >
       {{ freet.content }}
     </p>
-    <p class="info">
-      Posted at {{ freet.dateModified }}
-      <i v-if="freet.dateModified !== freet.dateCreated">(edited)</i>
-    </p>
 
     <span>{{ likes === undefined ? 'loading likes...' : likes.length }} {{ ' ' }}</span>
     <span v-if="$store.state.username">
       <button @click="onLikeClick">
-        <font-awesome-icon
+        <span
           v-if="userLikedPost"
           icon="fa-solid fa-heart"
-        />
+          class="liked"
+        >
+          ❤️
+        </span>
         <font-awesome-icon
           v-else
           icon="fa-regular fa-heart"
+          class="unliked"
         />
       </button> |
     </span>
@@ -85,6 +85,10 @@
     <i v-else>
       Loading group...
     </i>
+    <p class="date">
+      Posted at {{ freet.dateModified }}
+      <i v-if="freet.dateModified !== freet.dateCreated">(edited)</i>
+    </p>
     <section class="alerts">
       <article
         v-for="(status, alert, index) in alerts"
@@ -127,7 +131,6 @@ export default {
         const getUrl = `/api/likes?username=${this.$store.state.username}`;
         const likeObj = (await fetch(getUrl).then(async r => r.json())).find(
           like => like.freetId === this.freet._id);
-        console.log('like to remove: ', likeObj);
 
         const deleteUrl = `/api/likes/${likeObj._id}`
         await fetch(deleteUrl, { method: 'DELETE' });
@@ -235,11 +238,32 @@ export default {
 .freet {
     border: 1px solid rgb(0, 210, 164);
     border-radius: 8px;
-    padding: 20px;
+    border-width: var(--xs);
+    padding: 20px 30px;
     position: relative;
+    margin: var(--m) 0;
+}
+
+.freet:hover {
+  background-color: rgba(0, 196, 154, 0.034);
 }
 .author:hover {
-  color: rgb(85, 0, 255);
+  color: rgb(164, 118, 255);
   cursor: pointer;
 }
+
+textarea {
+  color: black;
+}
+
+.content {
+  padding: var(--l) 0;
+}
+
+.date {
+  color: var(--grey);
+  font-size: small;
+  text-align: right;
+}
+
 </style>

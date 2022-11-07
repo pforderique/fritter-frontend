@@ -46,12 +46,13 @@ export default {
 
 <style scoped>
 form {
-    display: flex;
-    position: relative;
+  display: flex;
+  position: relative;
 }
 
 input {
-    padding: 0 5px;
-    min-width: 200px;
+  padding: 0 5px;
+  min-width: 250px;
+  border-radius: 8px;
 }
 </style>

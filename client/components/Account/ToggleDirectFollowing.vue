@@ -1,12 +1,12 @@
 <!-- Form for changing password (block style) -->
 <template>
   <section>
-    <p>{{ $store.state.user }}</p>
-    <span>
+    <span class="toggle">
       <label :for="field.id">{{ field.label }}:</label>
       <VueToggles
         v-model="field.value"
         :value="field.value"
+        checkedBg="#64ffda"
         @click="onClick"
       />
     </span>
@@ -52,29 +52,19 @@ export default {
   }
 };
 </script>
-<!-- <script>
-import BlockForm from '@/components/common/BlockForm.vue';
 
-export default {
-  name: 'ToggleDirectFollowing',
-  mixins: [BlockForm],
-  data() {
-    return {
-      url: `/api/users`,
-      method: 'PATCH',
-      hasBody: true,
-      setUsername: true,
-      fields: [
-        {id: 'showDirectFollowingOnly', label: 'Show Direct Following Only', value: this.$store.state.user.showDirectFollowingOnly}
-      ],
-      title: 'Toggle Option',
-      callback: () => {
-        // update user store
-        const message = 'Successfully changed option!';
-        this.$set(this.alerts, message, 'success');
-        setTimeout(() => this.$delete(this.alerts, message), 3000);
-      }
-    };
-  }
-};
-</script> -->
+<style scoped>
+.toggle {
+  display: flex;
+  /* justify-content: center; */
+  flex-direction: row;
+  justify-content: space-around;
+  border: solid black;
+  margin-bottom: var(--s);
+  padding: var(--m);
+
+  border: 4px solid;
+  border-color: var(--primary-lightest);
+  border-radius: var(--m);
+}
+</style>

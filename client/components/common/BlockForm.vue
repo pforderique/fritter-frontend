@@ -6,6 +6,7 @@
     <h3>{{ title }}</h3>
     <article
       v-if="fields.length"
+      class="form-section"
     >
       <div
         v-for="field in fields"
@@ -21,6 +22,7 @@
         <v-select
           v-else-if="field.id === 'circle' && $store.state.user.circles"
           v-model="field.value"
+          class="select"
           :name="field.id"
           :value="field.value"
           :options="['All Followers'].concat($store.state.user.circles)"
@@ -38,6 +40,14 @@
       <p>{{ content }}</p>
     </article>
     <button
+      v-if="title === 'Delete account'"
+      type="submit"
+      class="delete-acc"
+    >
+      {{ title }}
+    </button>
+    <button
+      v-else
       type="submit"
     >
       {{ title }}
@@ -127,8 +137,10 @@ export default {
 
 <style scoped>
 form {
-  border: 1px solid #111;
-  padding: 0.5rem;
+  border: 4px solid;
+  border-color: var(--primary-lightest);
+  border-radius: var(--m);
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -157,5 +169,37 @@ form h3 {
 textarea {
    font-family: inherit;
    font-size: inherit;
+   background-color: #111;
+   color: #fff;
+}
+
+.select {
+  /* background-color: #111; */
+  color: black;
+  font-size: var(--m);
+  max-width: 30%;
+}
+
+.form-section {
+  padding: var(--m);
+}
+
+div > * {
+  width: 50%;
+}
+
+.delete-acc {
+  border-color: rgb(255, 10, 10);
+  color: red;
+}
+
+.delete-acc:hover {
+  background-color: rgb(255, 10, 10);
+  color: #fff;
+}
+
+button {
+  /* max-width: 50%; */
+  margin: auto var(--xxl);
 }
 </style>

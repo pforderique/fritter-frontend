@@ -55,7 +55,7 @@ export default {
   position: relative;
 }
 .user:hover {
-  background-color: rgba(85, 0, 255, 0.062);
+  background-color: rgba(71, 0, 213, 0.627);
   cursor: pointer;
 }
 .username:hover {

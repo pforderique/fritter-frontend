@@ -10,8 +10,8 @@
       <ChangeUsernameForm />
       <ChangePasswordForm />
       <ChangeThresholdForm />
-      <ToggleDirectFollowing />
       <CreateCircleForm /> 
+      <ToggleDirectFollowing />
     </section>
     <section>
       <header>
