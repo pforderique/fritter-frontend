@@ -18,11 +18,12 @@
           :value="field.value"
           @input="field.value = $event.target.value"
         />
-        <textarea
-          v-else-if="field.id === 'circle'"
+        <v-select
+          v-else-if="field.id === 'circle' && $store.state.user.circles"
+          v-model="field.value"
           :name="field.id"
           :value="field.value"
-          @input="field.value = $event.target.value"
+          :options="['All Followers'].concat($store.state.user.circles)"
         />
         <input
           v-else
@@ -68,7 +69,9 @@ export default {
       setUsername: false, // Whether or not stored username should be updated after form submission
       refreshFreets: false, // Whether or not stored freets should be updated after form submission
       alerts: {}, // Displays success/error messages encountered during form submission
-      callback: null // Function to run after successful form submission
+      callback: null, // Function to run after successful form submission
+
+      selected: 'All Followers'
     };
   },
   methods: {

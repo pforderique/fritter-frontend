@@ -2,6 +2,7 @@ import type {NextFunction, Request, Response} from 'express';
 import express from 'express';
 import FreetCollection from './collection';
 import CircleCollection from '../circle/collection';
+import LikeCollection from '../like/collection';
 import * as userValidator from '../user/middleware';
 import * as freetValidator from '../freet/middleware';
 import * as circleValidator from '../circle/middleware';
@@ -106,7 +107,10 @@ router.delete(
     freetValidator.isValidFreetModifier
   ],
   async (req: Request, res: Response) => {
-    await FreetCollection.deleteOne(req.params.freetId);
+    await Promise.all([
+      FreetCollection.deleteOne(req.params.freetId),
+      LikeCollection.deleteManyByFreetId(req.params.freetId)
+    ]);
     res.status(200).json({
       message: 'Your freet was deleted successfully.'
     });

@@ -70,7 +70,7 @@ export default {
   components: {FreetComponent, GetFreetsForm, CreateFreetForm, UsersScroll},
   data() {
     return {
-      refresh: 0
+      refresh: 0,
     }
   },
   computed : {

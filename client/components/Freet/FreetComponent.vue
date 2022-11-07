@@ -145,7 +145,7 @@ export default {
         await fetch(postUrl, options);
         this.likes = this.likes.concat([this.$store.state.username]);
       }
-      // this.$store.commit('refreshFreets');
+      this.$store.commit('refreshFreets');
     },
     startEditing() {
       /**

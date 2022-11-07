@@ -80,6 +80,15 @@ class LikeCollection {
   static async deleteMany(userId: Types.ObjectId | string): Promise<void> {
     await LikeModel.deleteMany({userId});
   }
+
+  /**
+   * Delete all the likes by a freetId
+   *
+   * @param {string} freetId - The id of freet
+   */
+  static async deleteManyByFreetId(freetId: Types.ObjectId | string): Promise<void> {
+    await LikeModel.deleteMany({freetId});
+  }
 }
 
 export default LikeCollection;
